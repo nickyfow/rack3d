@@ -4,15 +4,13 @@ import json
 import urllib.request
 
 # settings
+jsonUrl = "http://example.com/racktables/json.php"
 objFile = "dc.obj"
 mtlFile = "dc.mtl"
 
-# import the json into a list of dicts
-# from url...
-#with urllib.request.urlopen(jsonUrl) as response:
-#   data = json.loads(response.read())
-with open("../../dc.json") as foo:
-    data = json.load(foo)
+# download the json and import into a list of dicts
+with urllib.request.urlopen(jsonUrl) as response:
+   data = json.loads(response.read())
 
 # process the list of dicts
 for thing in data:
