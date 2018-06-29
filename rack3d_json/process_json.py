@@ -3,61 +3,89 @@
 import json
 import urllib.request
 
-# set the location of the racktables json page
-json_page = ""
-# set the json output file
-json_out = "dc.json"
+# settings
+objFile = "dc.obj"
+mtlFile = "dc.mtl"
 
-# download the json page and convert to a list of dicts
-with urllib.request.urlopen(json_page) as response:
-   data = json.loads(response.read())
+# import the json into a list of dicts
+# from url...
+#with urllib.request.urlopen(jsonUrl) as response:
+#   data = json.loads(response.read())
+with open("../../dc.json") as foo:
+    data = json.load(foo)
 
-# create a new list of dicts with xyz and color
-new_list = []
-for oldthing in data:
-    newthing = dict()
-    newthing['name'] = oldthing['name']
-    newthing['id'] = oldthing['id']
-    # calculate x,y,z in meters
-    if ( oldthing['row']  % 2 == 0 ):
-        newthing['xMin'] = ( oldthing['row'] * 2.4 ) + 1.2 - ( oldthing['maxDepth'] * 0.4 ) - 0.4
-        newthing['xMax'] = ( oldthing['row'] * 2.4 ) + 1.2 - ( oldthing['minDepth'] * 0.4 )
-    else:
-        newthing['xMin'] = ( oldthing['row'] * 2.4 ) + ( oldthing['minDepth'] * 0.4 )
-        newthing['xMax'] = ( oldthing['row'] * 2.4 ) + ( oldthing['maxDepth'] * 0.4 ) + 0.4
-    newthing['yMin'] = ( oldthing['rack'] * 0.6 ) + 0.01
-    newthing['yMax'] = ( oldthing['rack'] * 0.6 ) + 0.59
-    newthing['zMin'] = ( oldthing['minUnit'] * 0.05 )
-    newthing['zMax'] = ( oldthing['maxUnit'] * 0.05 ) + 0.045
+# process the list of dicts
+for thing in data:
     # generate rgb values by object type
-    newthing['rgb_blue'] = 0.5
-    newthing['rgb_green'] = 0.5
-    newthing['rgb_red'] = 0.5
-    if ( oldthing['objtype_id'] == '4' ):
-        newthing['rgb_blue']=0.75
-        newthing['rgb_green']=0.75
-        newthing['rgb_red']=1.0
-    if ( oldthing['objtype_id'] == '8' ):
-        newthing['rgb_blue']=0.75
-        newthing['rgb_green']=1.0
-        newthing['rgb_red']=0.75
-    if ( oldthing['objtype_id'] == '9' ):
-        newthing['rgb_blue']=1.0
-        newthing['rgb_green']=0.75
-        newthing['rgb_red']=0.75
-    # flip y axis (optional)
-    temp = newthing['yMin']
-    newthing['yMin'] = newthing['yMax'] * -1
-    newthing['yMax'] = temp * -1
+    thing['rgb_blue'] = 0.5
+    thing['rgb_green'] = 0.5
+    thing['rgb_red'] = 0.5
+    if ( thing['objtype_id'] == '4' ):
+        thing['rgb_blue']=0.75
+        thing['rgb_green']=0.75
+        thing['rgb_red']=1.0
+    if ( thing['objtype_id'] == '8' ):
+        thing['rgb_blue']=0.75
+        thing['rgb_green']=1.0
+        thing['rgb_red']=0.75
+    if ( thing['objtype_id'] == '9' ):
+        thing['rgb_blue']=1.0
+        thing['rgb_green']=0.75
+        thing['rgb_red']=0.75
     # rotate -90 on x axis to compensate for blender import script
-    temp = newthing['yMin']
-    newthing['yMin'] = newthing['zMin']
-    newthing['zMin'] = newthing['yMax'] * -1
-    newthing['yMax'] = newthing['zMax']
-    newthing['zMax'] = temp * -1
-    new_list.append(newthing)
+    temp = thing['yMin']
+    thing['yMin'] = thing['zMin']
+    thing['zMin'] = thing['yMax'] * -1
+    thing['yMax'] = thing['zMax']
+    thing['zMax'] = temp * -1
 
-# export the new list to a json file
-with open(json_out, 'w') as out:
-    json.dump( new_list, out )
+# show the json
+#print(json.dumps( data ))
 
+# export obj file
+vert=0
+face=0
+with open(objFile, 'w') as obj:
+    for thing in data:
+        obj.write("o {}\n".format(thing['name']))
+        obj.write("v {} {} {}\n".format(thing['xMin'],thing['yMin'],thing['zMin']))
+        obj.write("v {} {} {}\n".format(thing['xMin'],thing['yMax'],thing['zMin']))
+        obj.write("v {} {} {}\n".format(thing['xMax'],thing['yMax'],thing['zMin']))
+        obj.write("v {} {} {}\n".format(thing['xMax'],thing['yMin'],thing['zMin']))
+        obj.write("v {} {} {}\n".format(thing['xMin'],thing['yMin'],thing['zMax']))
+        obj.write("v {} {} {}\n".format(thing['xMin'],thing['yMax'],thing['zMax']))
+        obj.write("v {} {} {}\n".format(thing['xMax'],thing['yMax'],thing['zMax']))
+        obj.write("v {} {} {}\n".format(thing['xMax'],thing['yMin'],thing['zMax']))
+        obj.write("vn 0.0 0.0 -1.0\n")
+        obj.write("vn 0.0 0.0 1.0\n")
+        obj.write("vn 0.0 1.0 0.0\n")
+        obj.write("vn 1.0 0.0 0.0\n")
+        obj.write("vn 0.0 -1.0 0.0\n")
+        obj.write("vn -1.0 0.0 0.0\n")
+        obj.write("usemtl {}\n".format(thing['name']))
+        obj.write("s off\n")
+        obj.write("f {}//{} {}//{} {}//{} {}//{}\n".format( (vert+1), (face+1), (vert+2), (face+1), (vert+3), (face+1), (vert+4), (face+1)))
+        obj.write("f {}//{} {}//{} {}//{} {}//{}\n".format( (vert+5), (face+2), (vert+8), (face+2), (vert+7), (face+2), (vert+6), (face+2)))
+        obj.write("f {}//{} {}//{} {}//{} {}//{}\n".format( (vert+2), (face+3), (vert+6), (face+3), (vert+7), (face+3), (vert+3), (face+3)))
+        obj.write("f {}//{} {}//{} {}//{} {}//{}\n".format( (vert+3), (face+4), (vert+7), (face+4), (vert+8), (face+4), (vert+4), (face+4)))
+        obj.write("f {}//{} {}//{} {}//{} {}//{}\n".format( (vert+4), (face+5), (vert+8), (face+5), (vert+5), (face+5), (vert+1), (face+5)))
+        obj.write("f {}//{} {}//{} {}//{} {}//{}\n".format( (vert+1), (face+6), (vert+5), (face+6), (vert+6), (face+6), (vert+2), (face+6)))
+        obj.write("\n")
+        vert = vert + 8
+        face = face + 6
+
+# export mtl file 
+with open(mtlFile, 'w') as mtl:
+    for thing in data:
+        mtl.write("newmtl {}\n".format(thing['name']))
+        mtl.write("Ns 96.078431\n")
+        mtl.write("Ka 1.000000 1.000000 1.000000\n");
+        mtl.write("Kd {} {} {}\n".format(thing['rgb_red'],thing['rgb_green'],thing['rgb_blue']))
+        mtl.write("Ks 0.500000 0.500000 0.500000\n");
+        mtl.write("Ke 0.000000 0.000000 0.000000\n");
+        mtl.write("Ni 1.000000\n");
+        mtl.write("d 1.000000\n");
+        mtl.write("illum 2\n");
+        mtl.write("\n");
+
+    
