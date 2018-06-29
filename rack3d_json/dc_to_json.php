@@ -49,7 +49,24 @@ function map_dc($location_id){
                                     }
                                 }
                             }
-                            $objectArray[] = array('name' => $row3['name'], 'id' => $row3['id'], 'objtype_id' => $row3['objtype_id'], 'row' => $rowCount, 'rack' => $rackCount, 'minUnit' => $minUnit, 'maxUnit' => $maxUnit, 'minDepth' => $minDepth, 'maxDepth' => $maxDepth );
+                            // generate xyz values in mm
+                            if ( $rowCount % 2 == 0 ){
+                                $xMin = ( $rowCount * 2400 ) + 1200 - ( $maxDepth * 400 ) - 400;
+                                $xMax = ( $rowCount * 2400 ) + 1200 - ( $minDepth * 400 );
+                            } else {
+                                $xMin = ( $rowCount * 2400 ) + ( $minDepth * 400 );
+                                $xMax = ( $rowCount * 2400 ) + ( $maxDepth * 400 ) + 400;
+                            }
+                            $yMin = ( $rackCount * 600 ) + 10;
+                            $yMax = ( $rackCount * 600 ) + 590;
+                            $zMin = ( $minUnit * 50 );
+                            $zMax = ( $maxUnit * 50 ) + 45;
+                            // flip the y axis (if needed)
+                            //$temp = $yMin;
+                            //$yMin = $yMax * -1;
+                            //$yMax = $temp * -1;
+                            // add to array
+                            $objectArray[] = array('name' => $row3['name'], 'id' => $row3['id'], 'objtype_id' => $row3['objtype_id'], 'xMin' => $xMin, 'xMax' => $xMax, 'yMin' => $yMin, 'yMax' => $yMax, 'zMin' => $zMin, 'zMax' => $zMax );
                         }
                     }
                     $rackCount++;
@@ -58,14 +75,13 @@ function map_dc($location_id){
                 $rackCount=0;
             }
         }
-        // php 5.4 onward
-        //return json_encode($objectArray, 'JSON_PRETTY_PRINT');
         return json_encode($objectArray);
     }
 }
 
-$location_id=;
+$location_id=1;
 $script_mode = TRUE;
-include("$somewhere/init.php");
+include("/var/www/html/racktables/init.php");
+header('Content-Type: application/json');
 printf(map_dc($location_id));
 ?>
