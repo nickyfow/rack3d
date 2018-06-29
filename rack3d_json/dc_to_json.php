@@ -75,8 +75,6 @@ function map_dc($location_id){
                 $rackCount=0;
             }
         }
-        // php 5.4 onward
-        //return json_encode($objectArray, 'JSON_PRETTY_PRINT');
         return json_encode($objectArray);
     }
 }
