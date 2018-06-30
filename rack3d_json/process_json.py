@@ -4,7 +4,7 @@ import json
 import urllib.request
 
 # settings
-jsonUrl = ""
+jsonUrl = "https://raw.githubusercontent.com/magnusmichaelson/rack3d/master/rack3d_json/example.json"
 objFile = "dc.obj"
 mtlFile = "dc.mtl"
 
