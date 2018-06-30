@@ -44,9 +44,6 @@ for thing in data:
     thing['yMax'] = thing['zMax']
     thing['zMax'] = temp * -1
 
-# show the json
-#print(json.dumps( data ))
-
 # export obj file
 vert=0
 face=0
