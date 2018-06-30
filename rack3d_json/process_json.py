@@ -89,5 +89,3 @@ with open(mtlFile, 'w') as mtl:
         mtl.write("d 1.000000\n");
         mtl.write("illum 2\n");
         mtl.write("\n");
-
-    
