@@ -4,7 +4,7 @@ import json
 import urllib.request
 
 # settings
-jsonUrl = "http://example.com/racktables/json.php"
+jsonUrl = ""
 objFile = "dc.obj"
 mtlFile = "dc.mtl"
 
@@ -30,6 +30,13 @@ for thing in data:
         thing['rgb_blue']=1.0
         thing['rgb_green']=0.75
         thing['rgb_red']=0.75
+    # scale down from mm to meters
+    thing['xMin'] = thing['xMin'] * 0.001
+    thing['xMax'] = thing['xMax'] * 0.001
+    thing['yMin'] = thing['yMin'] * 0.001
+    thing['yMax'] = thing['yMax'] * 0.001
+    thing['zMin'] = thing['zMin'] * 0.001
+    thing['zMax'] = thing['zMax'] * 0.001
     # rotate -90 on x axis to compensate for blender import script
     temp = thing['yMin']
     thing['yMin'] = thing['zMin']
