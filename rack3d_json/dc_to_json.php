@@ -85,3 +85,4 @@ include("/var/www/html/racktables/inc/init.php");
 header('Content-Type: application/json');
 printf(map_dc($location_id));
 ?>
+
