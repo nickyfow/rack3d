@@ -30,7 +30,7 @@ for (rowName, rowId) in result1:
     result2 = cur2.fetchall()
     for (rackName, rackId) in result2:
         # for each rack, get all the objects
-        query3 = "SELECT DISTINCT o.name AS objName, o.id AS objId, o.objtype_id AS objType FROM Object AS o INNER JOIN RackSpace AS r ON o.id = r.object_id WHERE (o.objtype_id=4 OR objtype_id=8 OR objtype_id=9) AND r.rack_id="+str(rackId)
+        query3 = "SELECT DISTINCT o.name AS objName, o.id AS objId, o.objtype_id AS objType FROM Object AS o INNER JOIN RackSpace AS r ON o.id = r.object_id WHERE r.rack_id="+str(rackId)
         cur3.execute(query3)
         result3 = cur3.fetchall()
         for (objName, objId, objType) in result3:
