@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.6
+#!/usr/bin/env python3.6
 
 # this script downloads the json, builds the model files and the python files to import them, then runs blender.
 
