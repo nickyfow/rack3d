@@ -17,6 +17,7 @@ function map_dc($location_id){
                     $query3 = "SELECT DISTINCT o.name, o.id, o.objtype_id FROM Object AS o INNER JOIN RackSpace AS r ON o.id = r.object_id WHERE (o.objtype_id=4 OR objtype_id=8 OR objtype_id=9) AND r.rack_id=".$row2['id'];
                     if ($result3 = $dbxlink->query($query3)) {
                         while($row3 = $result3->fetch(PDO::FETCH_ASSOC)) {
+                            $objtype_id = $row3['objtype_id'];
                             # object unit and depth
                             $query4 = "SELECT unit_no, atom FROM RackSpace WHERE object_id = ".$row3['id'];
                             if ($result4 = $dbxlink->query($query4)) {
@@ -61,12 +62,36 @@ function map_dc($location_id){
                             $yMax = ( $rackCount * 600 ) + 590;
                             $zMin = ( $minUnit * 50 );
                             $zMax = ( $maxUnit * 50 ) + 45;
-                            // flip y axis
-                            $temp = $yMin;
-                            $yMin = $yMax * -1;
-                            $yMax = $temp * -1;
+                            // center on 0,0,0 (optional)
+                            //$xMin = $xMin - 6600;
+                            //$xMax = $xMax - 6600;
+                            //$yMin = $yMin - 6000;
+                            //$yMax = $yMax - 6000;
+                            // flip y axis (optional)
+                            //$temp = $yMin;
+                            //$yMin = $yMax * -1;
+                            //$yMax = $temp * -1;
+                            // generate colors
+                            $rgb_red = 0.5;
+                            $rgb_green = 0.5;
+                            $rgb_blue = 0.5;
+                            if ( $objtype_id == 4 ){
+                            $rgb_red = 1.0;
+                            $rgb_green = 0.25;
+                            $rgb_blue = 0.25;
+                            }
+                            if ( $objtype_id == 8 ){
+                            $rgb_red = 0.25;
+                            $rgb_green = 1.0;
+                            $rgb_blue = 0.25;
+                            }
+                            if ( $objtype_id == 9 ){
+                            $rgb_red = 0.25;
+                            $rgb_green = 0.25;
+                            $rgb_blue = 1.0;
+                            }
                             // add to array
-                            $objectArray[] = array('name' => $row3['name'], 'id' => $row3['id'], 'objtype_id' => $row3['objtype_id'], 'xMin' => $xMin, 'xMax' => $xMax, 'yMin' => $yMin, 'yMax' => $yMax, 'zMin' => $zMin, 'zMax' => $zMax );
+                            $objectArray[] = array('name' => $row3['name'], 'id' => $row3['id'], 'objtype_id' => $objtype_id, 'xMin' => $xMin, 'xMax' => $xMax, 'yMin' => $yMin, 'yMax' => $yMax, 'zMin' => $zMin, 'zMax' => $zMax, 'rgb_red' => $rgb_red, 'rgb_green' => $rgb_green, 'rgb_blue' => $rgb_blue );
                         }
                     }
                     $rackCount++;
@@ -85,4 +110,3 @@ include("/var/www/html/racktables/inc/init.php");
 header('Content-Type: application/json');
 printf(map_dc($location_id));
 ?>
-
