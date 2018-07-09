@@ -14,22 +14,6 @@ with urllib.request.urlopen(jsonUrl) as response:
 
 # process the list of dicts
 for thing in data:
-    # generate rgb values by object type
-    thing['rgb_blue'] = 0.5
-    thing['rgb_green'] = 0.5
-    thing['rgb_red'] = 0.5
-    if ( thing['objtype_id'] == '4' ):
-        thing['rgb_blue']=0.75
-        thing['rgb_green']=0.75
-        thing['rgb_red']=1.0
-    if ( thing['objtype_id'] == '8' ):
-        thing['rgb_blue']=0.75
-        thing['rgb_green']=1.0
-        thing['rgb_red']=0.75
-    if ( thing['objtype_id'] == '9' ):
-        thing['rgb_blue']=1.0
-        thing['rgb_green']=0.75
-        thing['rgb_red']=0.75
     # scale down from mm to meters
     thing['xMin'] = thing['xMin'] * 0.001
     thing['xMax'] = thing['xMax'] * 0.001
